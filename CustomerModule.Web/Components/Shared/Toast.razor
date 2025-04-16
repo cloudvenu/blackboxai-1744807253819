@@ -1,0 +1,105 @@
+@inject IJSRuntime JSRuntime
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    @foreach (var toast in _toasts)
+    {
+        <div class="toast show @GetToastClass(toast.Type)" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="@GetToastIcon(toast.Type) me-2"></i>
+                <strong class="me-auto">@GetToastTitle(toast.Type)</strong>
+                <small>@toast.Timestamp.ToString("HH:mm:ss")</small>
+                <button type="button" class="btn-close" @onclick="() => RemoveToast(toast)"></button>
+            </div>
+            <div class="toast-body">
+                @toast.Message
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ToastMessage> _toasts = new();
+    private const int AutoHideDelay = 5000; // 5 seconds
+
+    public enum ToastType
+    {
+        Success,
+        Error,
+        Info,
+        Warning
+    }
+
+    private class ToastMessage
+    {
+        public string Message { get; set; } = string.Empty;
+        public ToastType Type { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
+    public async Task ShowToast(string message, ToastType type = ToastType.Info)
+    {
+        var toast = new ToastMessage
+        {
+            Message = message,
+            Type = type,
+            Timestamp = DateTime.Now
+        };
+
+        _toasts.Add(toast);
+        StateHasChanged();
+
+        // Auto-hide the toast after delay
+        await Task.Delay(AutoHideDelay);
+        RemoveToast(toast);
+    }
+
+    private void RemoveToast(ToastMessage toast)
+    {
+        _toasts.Remove(toast);
+        StateHasChanged();
+    }
+
+    private string GetToastClass(ToastType type) => type switch
+    {
+        ToastType.Success => "bg-success text-white",
+        ToastType.Error => "bg-danger text-white",
+        ToastType.Warning => "bg-warning",
+        _ => "bg-info text-white"
+    };
+
+    private string GetToastIcon(ToastType type) => type switch
+    {
+        ToastType.Success => "fas fa-check-circle text-white",
+        ToastType.Error => "fas fa-exclamation-circle text-white",
+        ToastType.Warning => "fas fa-exclamation-triangle text-dark",
+        _ => "fas fa-info-circle text-white"
+    };
+
+    private string GetToastTitle(ToastType type) => type switch
+    {
+        ToastType.Success => "Success",
+        ToastType.Error => "Error",
+        ToastType.Warning => "Warning",
+        _ => "Information"
+    };
+}
+
+<style>
+    .toast-container {
+        z-index: 1050;
+    }
+
+    .toast {
+        min-width: 300px;
+        margin-bottom: 0.5rem;
+        opacity: 1 !important;
+    }
+
+    .toast-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .toast-body {
+        padding: 1rem;
+    }
+</style>
