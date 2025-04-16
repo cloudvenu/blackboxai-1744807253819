@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\CustomerModule.Core\CustomerModule.Core.csproj" />
+    <ProjectReference Include="..\CustomerModule.Infrastructure\CustomerModule.Infrastructure.csproj" />
+    <ProjectReference Include="..\CustomerModule.Shared\CustomerModule.Shared.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
