@@ -1,0 +1,177 @@
+@page "/customers/{Id:int}"
+@using CustomerModule.Core.Interfaces
+@using CustomerModule.Shared.DTOs
+@inject ICustomerService CustomerService
+@inject NavigationManager NavigationManager
+@inject ILogger<CustomerDetails> Logger
+@inject ToastService ToastService
+
+<PageTitle>Customer Details</PageTitle>
+
+@if (loading)
+{
+    <LoadingSpinner Message="Loading customer details..." IsOverlay="true" />
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1 class="mb-0">Customer Details</h1>
+        <div class="d-flex gap-2">
+            <button class="btn btn-secondary" @onclick="NavigateBack">
+                <i class="fas fa-arrow-left me-1"></i> Back
+            </button>
+            @if (customer != null)
+            {
+                <a href="/customers/edit/@Id" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Edit
+                </a>
+            }
+        </div>
+    </div>
+
+    @if (customer == null && !loading)
+    {
+        <div class="alert alert-danger" role="alert">
+            Customer not found.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="@(string.IsNullOrEmpty(customer.PhotoUrl) ? "https://via.placeholder.com/150" : customer.PhotoUrl)"
+                             class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="@customer.FullName" />
+                        <h4 class="mb-1">@customer.FullName</h4>
+                        @if (!string.IsNullOrEmpty(customer.CompanyName))
+                        {
+                            <p class="text-muted mb-2">@customer.CompanyName</p>
+                        }
+                        <div class="d-flex justify-content-center mb-2">
+                            <a href="mailto:@customer.Email" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-envelope me-1"></i> Email
+                            </a>
+                            @if (!string.IsNullOrEmpty(customer.Phone))
+                            {
+                                <a href="tel:@customer.Phone" class="btn btn-outline-primary">
+                                    <i class="fas fa-phone me-1"></i> Call
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Basic Information
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-envelope me-2"></i> Email</span>
+                                <span class="text-muted">@customer.Email</span>
+                            </li>
+                            @if (!string.IsNullOrEmpty(customer.Phone))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-phone me-2"></i> Phone</span>
+                                    <span class="text-muted">@customer.Phone</span>
+                                </li>
+                            }
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-credit-card me-2"></i> Credit Limit</span>
+                                <span class="text-muted">@customer.CreditLimit.ToString("C")</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-calendar me-2"></i> Created</span>
+                                <span class="text-muted">@customer.CreatedAt.ToShortDateString()</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-map-marker-alt me-1"></i>
+                        Addresses
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Billing Address</h5>
+                                <address>
+                                    @customer.BillingAddress.Street<br />
+                                    @customer.BillingAddress.City, @customer.BillingAddress.State @customer.BillingAddress.PostalCode<br />
+                                    @customer.BillingAddress.Country
+                                </address>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Shipping Address</h5>
+                                <address>
+                                    @customer.ShippingAddress.Street<br />
+                                    @customer.ShippingAddress.City, @customer.ShippingAddress.State @customer.ShippingAddress.PostalCode<br />
+                                    @customer.ShippingAddress.Country
+                                </address>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(customer.Notes))
+                {
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-sticky-note me-1"></i>
+                            Notes
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">@customer.Notes</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private CustomerDto? customer;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomer();
+    }
+
+    private async Task LoadCustomer()
+    {
+        try
+        {
+            loading = true;
+            customer = await CustomerService.GetCustomerByIdAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading customer details");
+            ToastService.ShowError("Failed to load customer details. Please try again.");
+            NavigationManager.NavigateTo("/customers");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/customers");
+    }
+}
