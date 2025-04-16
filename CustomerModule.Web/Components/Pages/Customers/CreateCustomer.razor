@@ -1,0 +1,270 @@
+@page "/customers/create"
+@using CustomerModule.Core.Interfaces
+@using CustomerModule.Shared.DTOs
+@using CustomerModule.Shared.Models
+@inject ICustomerService CustomerService
+@inject NavigationManager NavigationManager
+@inject ILogger<CreateCustomer> Logger
+@inject ToastService ToastService
+
+<PageTitle>Create Customer</PageTitle>
+
+@if (loading)
+{
+    <LoadingSpinner Message="Creating customer..." IsOverlay="true" />
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Create Customer</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-plus me-1"></i>
+            New Customer Details
+        </div>
+        <div class="card-body">
+            <EditForm Model="@customer" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-4" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <InputText @bind-Value="customer.FirstName" class="form-control" />
+                            <ValidationMessage For="@(() => customer.FirstName)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <InputText @bind-Value="customer.LastName" class="form-control" />
+                            <ValidationMessage For="@(() => customer.LastName)" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <InputText @bind-Value="customer.Email" class="form-control" type="email" />
+                            <ValidationMessage For="@(() => customer.Email)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <InputText @bind-Value="customer.Phone" class="form-control" />
+                            <ValidationMessage For="@(() => customer.Phone)" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Company Name</label>
+                            <InputText @bind-Value="customer.CompanyName" class="form-control" />
+                            <ValidationMessage For="@(() => customer.CompanyName)" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Credit Limit</label>
+                            <InputNumber @bind-Value="customer.CreditLimit" class="form-control" />
+                            <ValidationMessage For="@(() => customer.CreditLimit)" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Photo URL</label>
+                    <InputText @bind-Value="customer.PhotoUrl" class="form-control" />
+                    <ValidationMessage For="@(() => customer.PhotoUrl)" />
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Billing Address</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Street</label>
+                                    <InputText @bind-Value="customer.BillingAddress.Street" class="form-control" />
+                                    <ValidationMessage For="@(() => customer.BillingAddress.Street)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">City</label>
+                                    <InputText @bind-Value="customer.BillingAddress.City" class="form-control" />
+                                    <ValidationMessage For="@(() => customer.BillingAddress.City)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">State</label>
+                                    <InputText @bind-Value="customer.BillingAddress.State" class="form-control" />
+                                    <ValidationMessage For="@(() => customer.BillingAddress.State)" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Postal Code</label>
+                                    <InputText @bind-Value="customer.BillingAddress.PostalCode" class="form-control" />
+                                    <ValidationMessage For="@(() => customer.BillingAddress.PostalCode)" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Country</label>
+                                    <InputText @bind-Value="customer.BillingAddress.Country" class="form-control" />
+                                    <ValidationMessage For="@(() => customer.BillingAddress.Country)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Shipping Address</h5>
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="sameAsBilling" class="form-check-input" id="sameAsBilling" 
+                                         @onchange="HandleSameAsBillingChange" />
+                            <label class="form-check-label" for="sameAsBilling">
+                                Same as Billing Address
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Street</label>
+                                    <InputText @bind-Value="customer.ShippingAddress.Street" class="form-control" 
+                                             disabled="@sameAsBilling" />
+                                    <ValidationMessage For="@(() => customer.ShippingAddress.Street)" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">City</label>
+                                    <InputText @bind-Value="customer.ShippingAddress.City" class="form-control" 
+                                             disabled="@sameAsBilling" />
+                                    <ValidationMessage For="@(() => customer.ShippingAddress.City)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">State</label>
+                                    <InputText @bind-Value="customer.ShippingAddress.State" class="form-control" 
+                                             disabled="@sameAsBilling" />
+                                    <ValidationMessage For="@(() => customer.ShippingAddress.State)" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Postal Code</label>
+                                    <InputText @bind-Value="customer.ShippingAddress.PostalCode" class="form-control" 
+                                             disabled="@sameAsBilling" />
+                                    <ValidationMessage For="@(() => customer.ShippingAddress.PostalCode)" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Country</label>
+                                    <InputText @bind-Value="customer.ShippingAddress.Country" class="form-control" 
+                                             disabled="@sameAsBilling" />
+                                    <ValidationMessage For="@(() => customer.ShippingAddress.Country)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Notes</label>
+                    <InputTextArea @bind-Value="customer.Notes" class="form-control" rows="3" />
+                    <ValidationMessage For="@(() => customer.Notes)" />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Save Customer
+                    </button>
+                    <button type="button" class="btn btn-secondary" @onclick="NavigateBack">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CreateCustomerDto customer = new();
+    private bool sameAsBilling = false;
+
+    private bool loading;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            loading = true;
+
+            if (sameAsBilling)
+            {
+                customer.ShippingAddress = new AddressDto
+                {
+                    Street = customer.BillingAddress.Street,
+                    City = customer.BillingAddress.City,
+                    State = customer.BillingAddress.State,
+                    PostalCode = customer.BillingAddress.PostalCode,
+                    Country = customer.BillingAddress.Country
+                };
+            }
+
+            await CustomerService.CreateCustomerAsync(customer.ToEntity());
+            ToastService.ShowSuccess("Customer created successfully!");
+            NavigationManager.NavigateTo("/customers");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating customer");
+            ToastService.ShowError("Failed to create customer. Please try again.");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void HandleSameAsBillingChange()
+    {
+        if (sameAsBilling)
+        {
+            customer.ShippingAddress = new AddressDto
+            {
+                Street = customer.BillingAddress.Street,
+                City = customer.BillingAddress.City,
+                State = customer.BillingAddress.State,
+                PostalCode = customer.BillingAddress.PostalCode,
+                Country = customer.BillingAddress.Country
+            };
+        }
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/customers");
+    }
+}
