@@ -1,0 +1,134 @@
+<div class="modal @(IsVisible ? "show d-block" : "d-none")" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="@IconClass me-2"></i>
+                    @Title
+                </h5>
+                <button type="button" class="btn-close" @onclick="OnCancel" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (ChildContent != null)
+                {
+                    @ChildContent
+                }
+                else
+                {
+                    <p class="mb-0">@Message</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn @CancelButtonClass" @onclick="OnCancel">
+                    <i class="fas fa-times me-1"></i> @CancelText
+                </button>
+                <button type="button" class="btn @ConfirmButtonClass" @onclick="OnConfirm">
+                    <i class="@ConfirmIconClass me-1"></i> @ConfirmText
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Confirm Action";
+
+    [Parameter]
+    public string Message { get; set; } = "Are you sure you want to proceed?";
+
+    [Parameter]
+    public string ConfirmText { get; set; } = "Confirm";
+
+    [Parameter]
+    public string CancelText { get; set; } = "Cancel";
+
+    [Parameter]
+    public string IconClass { get; set; } = "fas fa-question-circle text-primary";
+
+    [Parameter]
+    public string ConfirmIconClass { get; set; } = "fas fa-check";
+
+    [Parameter]
+    public string ConfirmButtonClass { get; set; } = "btn-primary";
+
+    [Parameter]
+    public string CancelButtonClass { get; set; } = "btn-secondary";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirmCallback { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancelCallback { get; set; }
+
+    private Task OnConfirm()
+    {
+        return OnConfirmCallback.InvokeAsync();
+    }
+
+    private Task OnCancel()
+    {
+        return OnCancelCallback.InvokeAsync();
+    }
+
+    public static class DialogType
+    {
+        public static class Delete
+        {
+            public const string Title = "Confirm Deletion";
+            public const string Message = "Are you sure you want to delete this item? This action cannot be undone.";
+            public const string IconClass = "fas fa-trash-alt text-danger";
+            public const string ConfirmText = "Delete";
+            public const string ConfirmIconClass = "fas fa-trash-alt";
+            public const string ConfirmButtonClass = "btn-danger";
+        }
+
+        public static class Warning
+        {
+            public const string Title = "Warning";
+            public const string IconClass = "fas fa-exclamation-triangle text-warning";
+            public const string ConfirmButtonClass = "btn-warning";
+        }
+
+        public static class Info
+        {
+            public const string Title = "Information";
+            public const string IconClass = "fas fa-info-circle text-info";
+            public const string ConfirmButtonClass = "btn-info";
+        }
+    }
+}
+
+<style>
+    .modal-header .fas {
+        font-size: 1.2rem;
+    }
+
+    .modal {
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+
+    .modal.show {
+        animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .btn {
+        min-width: 100px;
+    }
+</style>
