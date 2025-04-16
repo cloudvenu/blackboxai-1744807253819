@@ -1,0 +1,99 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Welcome to Customer Management</h1>
+    
+    <div class="row mt-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0">Customers</h4>
+                            <div class="small">Manage your customer base</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/customers">View Details</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-user-plus fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0">New Customer</h4>
+                            <div class="small">Add a new customer</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/customers/create">Add Customer</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Quick Guide
+                </div>
+                <div class="card-body">
+                    <h5>Getting Started</h5>
+                    <p>Welcome to the Customer Management System. Here's what you can do:</p>
+                    <ul>
+                        <li>View and manage your customer list</li>
+                        <li>Add new customers to the system</li>
+                        <li>Edit existing customer information</li>
+                        <li>View detailed customer profiles</li>
+                        <li>Search for specific customers</li>
+                    </ul>
+                    <p>Click on the cards above to get started, or use the navigation menu on the left.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-lightbulb me-1"></i>
+                    Features
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="/customers" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Customer Management</h5>
+                                <small><i class="fas fa-arrow-right"></i></small>
+                            </div>
+                            <p class="mb-1">View, edit, and manage your customer database.</p>
+                        </a>
+                        <a href="/customers/create" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Customer Registration</h5>
+                                <small><i class="fas fa-arrow-right"></i></small>
+                            </div>
+                            <p class="mb-1">Add new customers with detailed information.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
